@@ -47,9 +47,8 @@ class SearchableBehavior extends ModelBehavior {
         } else {
             $this->settings[$Model->alias]['foreignKey'] = 0;
         }
-        if ($this->settings[$Model->alias]['foreignKey'] == 0 || $this->settings[$Model->alias]['rebuildOnUpdate']) {
+        if ($this->settings[$Model->alias]['foreignKey'] == 0 )
             $this->settings[$Model->alias]['_index'] = $this->processData($Model);
-        }
         return true;
     }
     
@@ -58,6 +57,10 @@ class SearchableBehavior extends ModelBehavior {
             if (!$this->SearchIndex) {
                 $this->SearchIndex = ClassRegistry::init('Searchable.SearchIndex', true);
             }
+            # rebuild again to make sure we have the latest data
+            if ( $this->settings[$Model->alias]['rebuildOnUpdate'] ) 
+                $this->settings[$Model->alias]['_index'] = $this->processData($Model);
+
             if ($this->settings[$Model->alias]['foreignKey'] == 0) {
                 $this->settings[$Model->alias]['foreignKey'] = $Model->getLastInsertID();
                 $this->SearchIndex->save(
